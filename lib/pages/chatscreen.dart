@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:logger/logger.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'secrets.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -15,19 +16,19 @@ class _ChatScreenState extends State<ChatScreen> {
   late stt.SpeechToText _speech;
   bool _speechInitialized = false;
   var logger = Logger();
+  late FlutterTts _flutterTts;
 
-  // Store messages with role information
   final List<Map<String, dynamic>> _messages = [];
 
   final Map<String, String> _languages = {
-    'English': 'en_US',
-    'French': 'fr_FR',
-    'Spanish': 'es_ES',
-    'German': 'de_DE',
-    'Arabic': 'ar_TN',
+    'English': 'en-US',
+    'French': 'fr-FR',
+    'Spanish': 'es-ES',
+    'German': 'de-DE',
+    'Arabic': 'ar-TN',
   };
 
-  String _selectedLanguage = 'fr_FR';
+  String _selectedLanguage = 'fr-FR';
   late GenerativeModel _generativeModel;
 
   @override
@@ -35,19 +36,42 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _initSpeech();
     _initializeGemini();
+    _initTts();
+  }
+
+  void _initTts() {
+    _flutterTts = FlutterTts();
+
+    _flutterTts.setStartHandler(() => logger.i("TTS Started"));
+    _flutterTts.setCompletionHandler(() => logger.i("TTS Completed"));
+    _flutterTts.setErrorHandler((msg) => logger.e("TTS Error: $msg"));
+
+    _setTtsLanguage(_selectedLanguage);
+  }
+
+  Future<void> _setTtsLanguage(String languageCode) async {
+    try {
+      if (await _flutterTts.isLanguageAvailable(languageCode)) {
+        await _flutterTts.setLanguage(languageCode);
+        logger.i("TTS Language set to $languageCode");
+      } else {
+        logger.w("Language $languageCode not available, falling back to en-US");
+        await _flutterTts.setLanguage("en-US");
+      }
+    } catch (e) {
+      logger.e("Error setting TTS language: $e");
+    }
   }
 
   void _initializeGemini() {
-    // Get API key from Google AI Studio
     final apiKey = OPEN_API_KEY;
     if (apiKey.isEmpty) {
       logger.e('No API_KEY found in secrets.dart');
       return;
     }
 
-    // Initialize with correct model (gemini-1.5-flash is not publicly available yet)
     _generativeModel = GenerativeModel(
-      model: 'gemini-pro', // Use available public model
+      model: 'gemini-pro',
       apiKey: apiKey,
     );
   }
@@ -95,7 +119,9 @@ class _ChatScreenState extends State<ChatScreen> {
       final response = await _generativeModel.generateContent(content);
 
       if (response.text != null) {
-        _addMessage(response.text!, false);
+        final aiResponse = response.text!;
+        _addMessage(aiResponse, false);
+        await _speak(aiResponse);
       } else {
         _addMessage('No response received', false);
       }
@@ -103,6 +129,23 @@ class _ChatScreenState extends State<ChatScreen> {
       logger.e("Error generating AI response: $e");
       _addMessage("Error generating response", false);
     }
+  }
+
+  Future<void> _speak(String text) async {
+    try {
+      // Stop speech before starting new
+      await _flutterTts.stop();
+      await _flutterTts.speak(text);
+    } catch (e) {
+      logger.e("Error in TTS: $e");
+      _addMessage("Error speaking response", false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _flutterTts.stop();
+    super.dispose();
   }
 
   @override
@@ -121,7 +164,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: Text(e.key),
                       ))
                   .toList(),
-              onChanged: (v) => setState(() => _selectedLanguage = v!),
+              onChanged: (v) async {
+                setState(() => _selectedLanguage = v!);
+                await _setTtsLanguage(v!);
+              },
             ),
           ),
           Expanded(
@@ -134,20 +180,25 @@ class _ChatScreenState extends State<ChatScreen> {
                   alignment: message['isUser']
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: message['isUser']
-                          ? const Color(0xFF199A8E)
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      message['text'],
-                      style: TextStyle(
-                        color: message['isUser'] ? Colors.white : Colors.black,
+                  child: GestureDetector(
+                    onTap: () =>
+                        !message['isUser'] ? _speak(message['text']) : null,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 4, horizontal: 8),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: message['isUser']
+                            ? const Color(0xFF199A8E)
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        message['text'],
+                        style: TextStyle(
+                          color:
+                              message['isUser'] ? Colors.white : Colors.black,
+                        ),
                       ),
                     ),
                   ),
