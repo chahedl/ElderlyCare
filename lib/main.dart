@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'pages/chatscreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -47,7 +48,24 @@ class HomePage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Icon(Icons.notifications_outlined),
+                  Row(
+                    children: [
+                      Icon(Icons.notifications_outlined),
+                      SizedBox(width: 16), // Add some spacing between icons
+                      IconButton(
+                        icon: Icon(LucideIcons.messageCircle), // Chat icon
+                        onPressed: () {
+                          // Navigate to the ChatScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
