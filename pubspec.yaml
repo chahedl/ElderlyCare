@@ -1,0 +1,42 @@
+name: pim
+description: A new Flutter project.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+
+  flutter:
+    sdk: flutter
+  image_picker: ^1.1.2
+  flutter_secure_storage: ^9.2.4
+  http: ^1.3.0  
+  google_fonts: ^6.2.1
+  provider: ^6.1.2
+  cupertino_icons: ^1.0.8
+  lucide_icons: ^0.257.0
+  speech_to_text: ^7.0.0
+  logger: ^1.0.0
+  chat_gpt_sdk: ^3.1.4
+  google_generative_ai: ^0.4.6
+  flutter_tts: 
+  font_awesome_flutter: ^10.8.0
+  
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/facebook.png
+    - assets/google1.png
+    - assets/logo.webp
+    - assets/pic.jpg
+    - assets/show_hide.jpg
