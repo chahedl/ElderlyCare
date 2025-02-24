@@ -1,0 +1,33 @@
+name: pim
+description: A new Flutter project.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  awesome_notifications: ^0.7.4+1
+  shared_preferences: ^2.0.0 # Added shared_preferences dependency
+  image_picker: ^0.8.5+3
+  flutter_secure_storage: ^8.0.0
+  http: ^0.13.5
+  google_fonts: ^3.0.1
+  provider: ^6.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/facebook.png
+    - assets/google1.png
+    - assets/logo.webp
+    - assets/pic.jpg
+    - assets/show_hide.jpg
