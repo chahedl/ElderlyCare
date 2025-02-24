@@ -7,6 +7,8 @@ const userRoutes = require('./routes/userRoutes');
 const http = require('http');
 const bonjour = require('bonjour')();
 const locationRoutes = require('./routes/locationRoutes');
+const doctorRoutes = require('./routes/DoctorRoutes');
+
 
 
 // Load environment variables from .env file
@@ -34,6 +36,8 @@ connectDB();
 // Use routes
 app.use('/api/users', userRoutes);
 app.use('/api/locations', locationRoutes);
+app.use('/api/doctors', doctorRoutes);
+
 
 // Define a simple route
 app.get('/', (req, res) => res.send('API is running...'));

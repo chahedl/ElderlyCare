@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 // Define an enum for Role
-const roles = ['ADMIN', 'USER', 'GUEST'];
+const roles = ['ADMIN', 'USER', 'GUEST','DOCTOR'];
 
 // User Schema
 const userSchema = new mongoose.Schema({
