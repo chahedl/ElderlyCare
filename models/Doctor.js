@@ -6,7 +6,8 @@ const DoctorSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    name: {
+    firstName: {
+
         type: String,
         required: [true, 'Name is required'],
         trim: true,
@@ -40,7 +41,15 @@ const DoctorSchema = new mongoose.Schema({
         default: 0,
         min: [0, 'Distance cannot be negative']
     },
+    lastName: {
+        type: String,
+        required: [true, 'Last name is required'],
+        trim: true,
+        minlength: [2, 'Last name must be at least 2 characters long'],
+        match: [/^[a-zA-Z\s]*$/, 'Last name can only contain letters and spaces']
+    },
     profilePicture: {
+
         type: String,
         default: ''
     },

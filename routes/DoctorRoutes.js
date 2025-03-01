@@ -2,12 +2,15 @@ const express = require('express');
 const router = express.Router();
 const doctorController = require('../controllers/DoctorController');
 const { check } = require('express-validator');
+const upload = require('../config/multer'); // Import multer configuration
+
 const { verifyToken } = require('../middleware/authMiddleware');
 
 
 // Validation rules for doctor creation
 const doctorValidation = [
-    check('name').notEmpty().withMessage('Name is required'),
+    check('firstName').notEmpty().withMessage('First name is required'),
+    check('lastName').notEmpty().withMessage('Last name is required'),
     check('specialization').isIn([
         'General', 'Lungs Specialist', 'Dentist', 'Psychiatrist',
         'Covid-19', 'Surgeon', 'Cardiologist', 'Pediatrician',
@@ -20,11 +23,13 @@ const doctorValidation = [
     check('location.coordinates.*')
         .isFloat()
         .withMessage('Coordinates must be numbers'),
-    check('userId').isMongoId().withMessage('Invalid user ID')
+    // Removed the validation for userId since the admin will create the doctor directly
 ];
 
 // Doctor routes
-router.post('/createD', verifyToken, doctorValidation, doctorController.createDoctor);
+router.post('/createD', upload.single('image'), doctorValidation, doctorController.createDoctor);
+
+
 
 router.get('/getD', verifyToken, doctorController.getDoctors);
 

@@ -30,6 +30,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true })); // For handling 
 app.use(morgan('dev'));
 app.use(cors({ origin: '*' })); // Adjust the origin to restrict access if necessary
 
+
 // Connect to database
 connectDB();
 
