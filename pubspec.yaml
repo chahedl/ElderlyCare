@@ -25,7 +25,11 @@ dependencies:
   google_generative_ai: ^0.4.6
   flutter_tts: 
   font_awesome_flutter: ^10.8.0
-  
+  file_picker: ^9.0.0
+  flutter_dotenv: ^5.2.1
+  audioplayers: ^6.2.0
+  path_provider: ^2.1.5
+  shared_preferences: ^2.5.2
 
 
 dev_dependencies:
@@ -34,9 +38,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
+  assets: 
     - assets/facebook.png
     - assets/google1.png
     - assets/logo.webp
     - assets/pic.jpg
     - assets/show_hide.jpg
+    - assets/doctor.png
+    - assets/logo.png

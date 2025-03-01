@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.pim"
-    compileSdk = 34  // Explicitly set to latest stable Android SDK
+    compileSdk = 35  // Explicitly set to latest stable Android SDK
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

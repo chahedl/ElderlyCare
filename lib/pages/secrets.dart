@@ -1,1 +1,2 @@
-const String OPEN_API_KEY = 'gemini/google api key sahbi :)';
+const String OPEN_API_KEY = 'key';
+const String ELEVEN_LABS_API_KEY = 'key';

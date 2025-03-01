@@ -1,9 +1,15 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:logger/logger.dart';
+import 'package:logger/Logger.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:flutter_tts/flutter_tts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'secrets.dart';
+import 'upload_user_voice_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -16,7 +22,8 @@ class _ChatScreenState extends State<ChatScreen> {
   late stt.SpeechToText _speech;
   bool _speechInitialized = false;
   var logger = Logger();
-  late FlutterTts _flutterTts;
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  String? _selectedVoice;
 
   final List<Map<String, dynamic>> _messages = [];
 
@@ -36,31 +43,14 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _initSpeech();
     _initializeGemini();
-    _initTts();
+    _loadSelectedVoice();
   }
 
-  void _initTts() {
-    _flutterTts = FlutterTts();
-
-    _flutterTts.setStartHandler(() => logger.i("TTS Started"));
-    _flutterTts.setCompletionHandler(() => logger.i("TTS Completed"));
-    _flutterTts.setErrorHandler((msg) => logger.e("TTS Error: $msg"));
-
-    _setTtsLanguage(_selectedLanguage);
-  }
-
-  Future<void> _setTtsLanguage(String languageCode) async {
-    try {
-      if (await _flutterTts.isLanguageAvailable(languageCode)) {
-        await _flutterTts.setLanguage(languageCode);
-        logger.i("TTS Language set to $languageCode");
-      } else {
-        logger.w("Language $languageCode not available, falling back to en-US");
-        await _flutterTts.setLanguage("en-US");
-      }
-    } catch (e) {
-      logger.e("Error setting TTS language: $e");
-    }
+  Future<void> _loadSelectedVoice() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _selectedVoice = prefs.getString('selected_voice');
+    });
   }
 
   void _initializeGemini() {
@@ -71,8 +61,10 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     _generativeModel = GenerativeModel(
-      model: 'gemini-pro',
+      model: 'gemini-2.0-flash', // Updated model name
       apiKey: apiKey,
+
+      // apiVersion: 'v1beta',     // Explicitly specify API version
     );
   }
 
@@ -108,42 +100,98 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _addMessage(String text, bool isUser) {
     setState(() {
-      _messages.insert(
-          0, {'text': text, 'isUser': isUser, 'timestamp': DateTime.now()});
+      _messages.insert(0, {
+        'text': text,
+        'isUser': isUser,
+        'timestamp': DateTime.now(),
+        'audioPath': null,
+      });
     });
   }
 
   Future<void> _generateResponse(String prompt) async {
+    final prefs = await SharedPreferences.getInstance();
+    final voiceId = prefs.getString('selected_voice');
+
+    if (voiceId == null) {
+      _addMessage("Please create a voice first", false);
+      return;
+    }
+
     try {
       final content = [Content.text(prompt)];
       final response = await _generativeModel.generateContent(content);
+      final aiResponse = response.text ?? "No response generated";
 
-      if (response.text != null) {
-        final aiResponse = response.text!;
-        _addMessage(aiResponse, false);
-        await _speak(aiResponse);
+      _addMessage(aiResponse, false);
+
+      // ElevenLabs TTS Request
+      final ttsResponse = await http.post(
+        Uri.parse('https://api.elevenlabs.io/v1/text-to-speech/$voiceId'),
+        headers: {
+          'xi-api-key': ELEVEN_LABS_API_KEY,
+          'Content-Type': 'application/json',
+          'Accept': 'audio/mpeg',
+        },
+        body: jsonEncode({
+          'text': aiResponse,
+          'model_id': 'eleven_multilingual_v2',
+          'voice_settings': {'stability': 0.5, 'similarity_boost': 0.75}
+        }),
+      );
+
+      logger.i('ElevenLabs Status Code: ${ttsResponse.statusCode}');
+      logger.i('ElevenLabs Headers: ${ttsResponse.headers}');
+
+      if (ttsResponse.statusCode == 200) {
+        final tempDir = await getTemporaryDirectory();
+        final fileName =
+            'response_${DateTime.now().millisecondsSinceEpoch}.mp3';
+        final file = File('${tempDir.path}/$fileName');
+
+        try {
+          await file.writeAsBytes(ttsResponse.bodyBytes);
+          logger.i('Audio file saved to: ${file.path}');
+
+          // Verify file existence
+          if (await file.exists()) {
+            logger.i('File exists, attempting playback...');
+
+            // Update UI and play audio
+            setState(() {
+              final messageIndex = _messages.indexWhere(
+                  (m) => m['text'] == aiResponse && m['audioPath'] == null);
+              if (messageIndex != -1) {
+                _messages[messageIndex]['audioPath'] = file.path;
+              }
+            });
+
+            await _audioPlayer.play(DeviceFileSource(file.path));
+            logger.i('Playback started successfully');
+          } else {
+            logger.e('File not found after writing!');
+            _addMessage("Audio file creation failed", false);
+          }
+        } catch (e) {
+          logger.e('File write error: $e');
+          _addMessage("Audio file creation error", false);
+        }
       } else {
-        _addMessage('No response received', false);
+        // Log detailed error response
+        final errorBody = utf8.decode(ttsResponse.bodyBytes);
+        logger.e('ElevenLabs Error: $errorBody');
+        _addMessage(
+            "Audio generation failed: ${ttsResponse.statusCode}", false);
       }
     } catch (e) {
-      logger.e("Error generating AI response: $e");
+      logger.e("General Error: $e");
       _addMessage("Error generating response", false);
-    }
-  }
-
-  Future<void> _speak(String text) async {
-    try {
-      await _flutterTts.stop();
-      await _flutterTts.speak(text);
-    } catch (e) {
-      logger.e("Error in TTS: $e");
-      _addMessage("Error speaking response", false);
     }
   }
 
   @override
   void dispose() {
-    _flutterTts.stop();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -151,25 +199,48 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF199A8E),
-        title: const Text("Your Chat", style: TextStyle(color: Colors.white)),
+        title: const Text("Chat Vocal"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_add),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const UploadUserVoiceScreen()),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: DropdownButton<String>(
-              value: _selectedLanguage,
-              items: _languages.entries
-                  .map((e) => DropdownMenuItem(
-                        value: e.value,
-                        child: Text(e.key),
-                      ))
-                  .toList(),
-              onChanged: (v) async {
-                setState(() => _selectedLanguage = v!);
-                await _setTtsLanguage(v!);
-              },
+            child: Row(
+              children: [
+                Expanded(
+                  child: DropdownButton<String>(
+                    value: _selectedLanguage,
+                    items: _languages.entries
+                        .map((e) => DropdownMenuItem(
+                              value: e.value,
+                              child: Text(e.key),
+                            ))
+                        .toList(),
+                    onChanged: (v) => setState(() => _selectedLanguage = v!),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    _selectedVoice != null
+                        ? 'Voice: ${_selectedVoice!}' // Display voice ID
+                        : 'No voice selected',
+                    style: TextStyle(
+                      color: _selectedVoice != null ? Colors.green : Colors.red,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -183,8 +254,14 @@ class _ChatScreenState extends State<ChatScreen> {
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
                   child: GestureDetector(
-                    onTap: () =>
-                        !message['isUser'] ? _speak(message['text']) : null,
+                    onTap: () async {
+                      if (!message['isUser'] && message['audioPath'] != null) {
+                        final file = File(message['audioPath']);
+                        if (await file.exists()) {
+                          await _audioPlayer.play(DeviceFileSource(file.path));
+                        }
+                      }
+                    },
                     child: Container(
                       margin: const EdgeInsets.symmetric(
                           vertical: 4, horizontal: 8),
@@ -206,6 +283,17 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 );
               },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: IconButton(
+              icon: Icon(
+                _speech.isListening ? Icons.mic : Icons.mic_none,
+                size: 50,
+                color: _speech.isListening ? Colors.red : Colors.blue,
+              ),
+              onPressed: _speech.isListening ? _stopListening : _startListening,
             ),
           ),
         ],
