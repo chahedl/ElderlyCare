@@ -3,6 +3,7 @@ import '../services/notification_service.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import 'profile_screen.dart';
+import 'marketplace_screen.dart'; // Import MarketplaceScreen
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,11 +14,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = [
-    _HomeContent(),
-    ProfileScreen(token: 'token'),
-    SettingsScreen(),
-  ];
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      _HomeContent(),
+      MarketplaceScreen('token', NotificationService()), // Ensure the token is correctly passed
+      ProfileScreen(token: 'token'),
+      SettingsScreen(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -25,36 +33,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-void _showMotivationalQuoteNotification(BuildContext context) async {
-  final notificationService = NotificationService();
-  await notificationService.showQuoteNotification();
-}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-      ),
+      appBar: AppBar(title: const Text('Home')),
       body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-      ),
     );
   }
 }
@@ -71,7 +54,9 @@ class _HomeContentState extends State<_HomeContent> {
   void initState() {
     super.initState();
     _fetchInitialQuote();
-    _showMotivationalQuoteNotification(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showMotivationalQuoteNotification();
+    });
   }
 
   Future<void> _fetchInitialQuote() async {
@@ -88,25 +73,26 @@ class _HomeContentState extends State<_HomeContent> {
     }
   }
 
+  Future<void> _showMotivationalQuoteNotification() async {
+    final notificationService = NotificationService();
+    await notificationService.showQuoteNotification();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (motivationalQuote != null)
             Text(
               motivationalQuote!,
-              style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+              style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
               textAlign: TextAlign.center,
             ),
         ],
       ),
     );
   }
-}
-
-void _showMotivationalQuoteNotification(BuildContext context) async {
-  final notificationService = NotificationService();
-  await notificationService.showQuoteNotification();
 }

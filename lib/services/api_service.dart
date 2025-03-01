@@ -2,10 +2,27 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import '../models/user.dart';
+import '../models/product_model.dart'; // Import the Product model
 import 'notification_service.dart';
 
 class ApiService {
-  final String baseUrl = 'http://192.168.100.75:2000/api';
+  final String baseUrl = 'http://localhost:2000/api'; // Updated to use localhost
+
+  Future<List<Product>> getProducts() async { 
+    // Fetch products from the backend
+    try {
+      final response = await _makeRequest(() => http.get(
+        Uri.parse('$baseUrl/products'),
+        headers: _getHeaders(),
+      ));
+
+      List<dynamic> jsonResponse = json.decode(response.body);
+      return jsonResponse.map((product) => Product.fromJson(product)).toList();
+    } catch (e) {
+      print('Error fetching products: $e');
+      throw Exception('Failed to load products: $e');
+    }
+  }
   final String token;
   final int timeoutSeconds = 30;
   final int maxRetries = 2;
@@ -58,11 +75,15 @@ class ApiService {
 
   Future<String> login(String email, String password) async {
     try {
+      print('Attempting to log in with email: $email');
       final response = await _makeRequest(() => http.post(
         Uri.parse('$baseUrl/users/login'),
         headers: _getHeaders(),
         body: json.encode({'email': email, 'password': password}),
       ));
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       final data = json.decode(response.body);
       final token = data['token'];
