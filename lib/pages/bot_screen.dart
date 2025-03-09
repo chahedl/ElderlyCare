@@ -13,7 +13,7 @@ class _BotScreenState extends State<BotScreen> {
   final TextEditingController _userMessage = TextEditingController();
 
   static const apiKey =
-      "AIzaSyDXKTD5R3jCDk1uFUOBmpgCD9_vrEfTPJ0"; // Remplace par ta clé API
+      "mykey0"; // Remplace par ta clé API
 
   final model = GenerativeModel(
     model: 'gemini-1.5-flash', // Passage à Gemini 2.0 Flash
