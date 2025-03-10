@@ -1,0 +1,89 @@
+{
+    "radios": [
+        {
+            "id": 1,
+            "name": "Mosaïque FM",
+            "tagline": "La première radio en Tunisie",
+            "color": "0xffa11431",
+            "desc": "Radio généraliste tunisienne couvrant l'actualité, la musique et les débats.",
+            "url": "http://radio.mosaiquefm.net:8000/mosalive",
+            "icon": "https://1.bp.blogspot.com/_H40bOe3FZUk/TRETIbtGd3I/AAAAAAAAAGU/MmYtePry0PQ/s1600/MosaiqueFM.jpg",
+            "image": "https://play-lh.googleusercontent.com/c7PB7eh1l2WJM9gR2d3x3ZOGbA-O07EYjROZdd8v-WdknbbfdnknVkJNeq12AjlVUdY",
+            "lang": "Arabe",
+            "category": "généraliste",
+            "disliked": false,
+            "order": 1
+        },
+        {
+            "id": 2,
+            "name": "Shems FM",
+            "tagline": "Le soleil de la Tunisie",
+            "color": "0xff221420",
+            "desc": "Une radio tunisienne privée proposant infos, culture et divertissement.",
+            "url": "https://radiotunisienne.org/#diwan-91-2",
+            "icon": "https://tunisvista.com/medias/radio-shems-fm-online.jpg",
+            "image": "https://th.bing.com/th/id/OIP.aWFtGJ4haeJP8IB2J5HD0AAAAA?rs=1&pid=ImgDetMain",
+            "lang": "Arabe",
+            "category": "généraliste",
+            "disliked": false,
+            "order": 2
+        },
+        {
+            "id": 3,
+            "name": "Express FM",
+            "tagline": "La radio de l'économie",
+            "color": "0xff04080b",
+            "desc": "Spécialisée dans l'économie et les affaires, avec des analyses et débats.",
+            "url": "https://radiotunisienne.org/#express",
+            "icon": "https://www.liveradio.ie/files/images/296177/resized/180x172c/express_fm.jpg",
+            "image": "https://www.businessnews.com.tn/images/album/IMGBN75735express-fm-100521-2.jpg",
+            "lang": "Français",
+            "category": "économie",
+            "disliked": false,
+            "order": 3
+        },
+        {
+            "id": 4,
+            "name": "Jawhara FM",
+            "tagline": "Votre radio régionale",
+            "color": "0xff066c53",
+            "desc": "Radio basée à Sousse, offrant infos locales et musique.",
+            "url": "http://streaming.jawharafm.net:8000/jawharafm",
+            "icon": "https://liveonlineradio.net/wp-content/uploads/2011/06/jawhara-fm-1-100x47.jpg",
+            "image": "https://th.bing.com/th/id/R.4e4eca16d00297d6f3b40eeb54d20104?rik=DTQ19pPxDEVA4g&riu=http%3a%2f%2fwww.tunisie-radio.com%2fsites%2fdefault%2ffiles%2fradio%2fjawhara-fm.jpg&ehk=URHBk7N5FkdyotpZtEd%2fcP8VeKHYiA8VAQUWZbbt6cw%3d&risl=&pid=ImgRaw&r=0",
+            "lang": "Arabe",
+            "category": "régionale",
+            "disliked": false,
+            "order": 4
+        },
+        {
+            "id": 5,
+            "name": "IFM",
+            "tagline": "L'info et la musique",
+            "color": "0xff0d487d",
+            "desc": "Radio mixant informations et hits musicaux.",
+            "url": "https://radiotunisienne.org/#ifm",
+            "icon": "https://iconape.com/wp-content/files/kd/73397/png/logo-ifm.png",
+            "image": "https://th.bing.com/th/id/OIP.W_e20q_C-bb2HJO9V0gj3gHaHa?rs=1&pid=ImgDetMain",
+            "lang": "Français",
+            "category": "musique",
+            "disliked": false,
+            "order": 5
+        },
+       
+        {
+            "id": 6,
+            "name": "Misk FM",
+            "tagline": "La radio des esprits libres",
+            "color": "0xff1a1a1a",
+            "desc": "Radio culturelle et alternative, dédiée aux débats et à la musique indépendante.",
+            "url": "https://radiotunisienne.org/#misk",
+            "icon": "https://realites.com.tn/fr/wp-content/uploads/2020/10/misk-fm.jpg",
+            "image": "https://th.bing.com/th/id/OIP.cK4rkJnjRM2i9owu1JS5EQHaHa?rs=1&pid=ImgDetMain",
+            "lang": "Arabe",
+            "category": "culture",
+            "disliked": false,
+            "order": 7
+        }
+    ]
+}
