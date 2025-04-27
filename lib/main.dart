@@ -23,7 +23,6 @@ void main() async {
       center: true,
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
-      // titleBarStyle: TitleBarStyle.hidden,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
@@ -40,39 +39,38 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => ThemeProvider(_)),
-          //theme
-          ChangeNotifierProvider(create: (_) => LocalizationProvider(_)),
-          //localizationen ai
-        ],
-        child: Builder(builder: (context) {
-          context.read<LocalizationProvider>().supportedLocales =
-              AppLocalizations.supportedLocales;
-          return MaterialApp(
-            navigatorKey: RouteConfiguration.navigatorKey,
-            restorationScopeId: 'AdminElederlyCare',
-            title: 'ElderlyCareADMIN',
-            debugShowCheckedModeBanner: false,
-            initialRoute: '/',
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            locale: context.watch<LocalizationProvider>().locale,
-            supportedLocales: AppLocalizations.supportedLocales,
-            onGenerateRoute: (settings) =>
-                RouteConfiguration.onGenerateRoute(settings),
-            themeMode: context.watch<ThemeProvider>().isDark
-                ? ThemeMode.dark
-                : ThemeMode.light,
-            theme: GlobalTheme.lightThemeData,
-            darkTheme: GlobalTheme.darkThemeData,
-            builder: (context, widget) {
-              return MediaQuery(
-                data: MediaQuery.of(context)
-                    .copyWith(textScaler: TextScaler.noScaling),
-                child: widget!,
-              );
-            },
-          );
-        }));
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider(_)),
+        ChangeNotifierProvider(create: (_) => LocalizationProvider(_)),
+      ],
+      child: Builder(builder: (context) {
+        context.read<LocalizationProvider>().supportedLocales =
+            AppLocalizations.supportedLocales;
+        return MaterialApp(
+          navigatorKey: RouteConfiguration.navigatorKey,
+          restorationScopeId: 'AdminElederlyCare',
+          title: 'ElderlyCareADMIN',
+          debugShowCheckedModeBanner: false,
+          initialRoute: '/signIn', // Changed to start at the sign-in page
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          locale: context.watch<LocalizationProvider>().locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          onGenerateRoute: (settings) =>
+              RouteConfiguration.onGenerateRoute(settings),
+          themeMode: context.watch<ThemeProvider>().isDark
+              ? ThemeMode.dark
+              : ThemeMode.light,
+          theme: GlobalTheme.lightThemeData,
+          darkTheme: GlobalTheme.darkThemeData,
+          builder: (context, widget) {
+            return MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: TextScaler.noScaling),
+              child: widget!,
+            );
+          },
+        );
+      }),
+    );
   }
 }
