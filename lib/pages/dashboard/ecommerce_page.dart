@@ -12,8 +12,9 @@ class EcommercePage extends LayoutWidget {
   @override
   String breakTabTitle(BuildContext context) {
     // TODO: implement breakTabTitle
-    return 'Ecommerce';
+    return 'ElderlyCare Admin Page';
   }
+
   @override
   Widget contentDesktopWidget(BuildContext context) {
     return const Column(children: [
@@ -32,5 +33,4 @@ class EcommercePage extends LayoutWidget {
       ChannelWidget()
     ]);
   }
-
 }

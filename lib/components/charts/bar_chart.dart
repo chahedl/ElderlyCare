@@ -28,7 +28,7 @@ class BarChartWidget extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Users by Category',
+                'Users BMI Stats',
                 style:
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
