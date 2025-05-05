@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart' as stripe
-    hide Card;
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe hide Card;
 import 'package:pim/screens/OrderConfirmationScreen.dart';
 import '../models/cart_model.dart';
 import 'package:dio/dio.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PaymentScreen extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -69,10 +69,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Future<void> _makePayment() async {
     if (clientSecret == null || orderId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Payment not ready. Please try again.'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
+        SnackBar(
+          content: const Text('Payment not ready. Please try again.'),
+          backgroundColor: Colors.red[700],
+          duration: const Duration(seconds: 3),
         ),
       );
       return;
@@ -84,29 +84,29 @@ class _PaymentScreenState extends State<PaymentScreen> {
           merchantDisplayName: 'ElderlyCare',
           appearance: stripe.PaymentSheetAppearance(
             colors: stripe.PaymentSheetAppearanceColors(
-              primary: Colors.blue,
+              primary: const Color(0xFF199A8E),
               background: Colors.white,
-              componentBorder: Colors.grey,
+              componentBorder: Colors.grey[300]!,
               componentBackground: Colors.white,
-              placeholderText: Colors.grey,
-              componentText: Colors.black,
-              error: Colors.red,
+              placeholderText: Colors.grey[600]!,
+              componentText: Colors.black87,
+              error: Colors.red[700]!,
             ),
             shapes: const stripe.PaymentSheetShape(
-              borderRadius: 8.0,
+              borderRadius: 12.0,
               borderWidth: 1.0,
             ),
             primaryButton: stripe.PaymentSheetPrimaryButtonAppearance(
               colors: stripe.PaymentSheetPrimaryButtonTheme(
                 light: stripe.PaymentSheetPrimaryButtonThemeColors(
-                  background: Colors.blue,
+                  background: const Color(0xFF199A8E),
                   text: Colors.white,
-                  border: Colors.blue,
+                  border: const Color(0xFF199A8E),
                 ),
                 dark: stripe.PaymentSheetPrimaryButtonThemeColors(
-                  background: Colors.blue,
+                  background: const Color(0xFF199A8E),
                   text: Colors.white,
-                  border: Colors.blue,
+                  border: const Color(0xFF199A8E),
                 ),
               ),
             ),
@@ -120,7 +120,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
       await stripe.Stripe.instance.presentPaymentSheet();
 
-      // Navigate to OrderConfirmationScreen on success
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Payment successful!'),
+          backgroundColor: const Color(0xFF199A8E),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -131,10 +138,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ),
       );
     } catch (e) {
-      print('Payment failed: $e'); // Log the detailed error for debugging
+      print('Payment failed: $e');
       String userFriendlyMessage = 'Payment failed. Please try again.';
-
-      // Provide specific messages based on the error type
       if (e is stripe.StripeException) {
         if (e.error.code == 'cancelled') {
           userFriendlyMessage = 'Payment cancelled.';
@@ -147,7 +152,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(userFriendlyMessage),
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.red[700],
           duration: const Duration(seconds: 3),
         ),
       );
@@ -160,63 +165,64 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   double getShippingPrice() {
-    return 21.00; // Fixed as per the screenshot
+    return 21.00;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Debug print to check images
-    for (var item in widget.cartItems) {
-      print('Product: ${item.product.name}, Image URL: ${item.product.image}');
-    }
-
+    const primaryColor = Color(0xFF199A8E);
     final totalPrice = getTotalPrice();
     const shippingPrice = 21.00;
     final finalPrice = totalPrice + shippingPrice;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: const Text(
-          'Checkout',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
+        backgroundColor: primaryColor,
+        title: const Text('Checkout', style: TextStyle(color: Colors.white)),
         elevation: 0,
         centerTitle: true,
-        foregroundColor: Colors.black87,
       ),
       body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                color: Colors.blue,
-              ),
+          ? Center(
+              child: CircularProgressIndicator(color: primaryColor),
             )
           : errorMessage != null
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.error_outline,
-                        color: Colors.red,
+                        color: Colors.red[700],
                         size: 48,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         errorMessage!,
-                        style: const TextStyle(
-                          color: Colors.red,
+                        style: TextStyle(
+                          color: Colors.red[700],
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.center,
                       ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _createPaymentIntent,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: const Text('Retry'),
+                      ),
                     ],
                   ),
                 )
               : Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
                       // Progress Bar
@@ -225,9 +231,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildProgressStep('Shipping', false),
-                            _buildProgressStep('Payment', true),
-                            _buildProgressStep('Checkout', false),
+                            _buildProgressStep('Shipping', false, primaryColor),
+                            _buildProgressStep('Payment', true, primaryColor),
+                            _buildProgressStep('Checkout', false, primaryColor),
                           ],
                         ),
                       ),
@@ -237,48 +243,68 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Order Summary Section
-                              const Text(
+                              Text(
                                 'Order Summary',
                                 style: TextStyle(
-                                  fontSize: 22,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  color: primaryColor,
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              // List of cart items with images
+                              // List of cart items
                               ...widget.cartItems.map(
                                 (item) => Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 8.0),
                                   child: Card(
-                                    elevation: 2,
+                                    elevation: 4,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.all(12.0),
                                       child: Row(
                                         children: [
                                           // Product Image
-                                          Container(
-                                            width: 60,
-                                            height: 60,
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             child: item.product.image.isNotEmpty
-                                                ? Image.network(
-                                                    item.product.image,
+                                                ? CachedNetworkImage(
+                                                    imageUrl:
+                                                        item.product.image,
+                                                    width: 60,
+                                                    height: 60,
                                                     fit: BoxFit.cover,
-                                                    errorBuilder: (context,
-                                                        error, stackTrace) {
-                                                      return Image.asset(
-                                                        'assets/placeholder_image.png',
-                                                        fit: BoxFit.cover,
-                                                      );
-                                                    },
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        Center(
+                                                            child: CircularProgressIndicator(
+                                                                color:
+                                                                    primaryColor)),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Container(
+                                                      width: 60,
+                                                      height: 60,
+                                                      color: Colors.grey[200],
+                                                      child: const Icon(
+                                                        Icons.broken_image,
+                                                        size: 30,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
                                                   )
-                                                : Image.asset(
-                                                    'assets/placeholder_image.png',
-                                                    fit: BoxFit.cover,
+                                                : Container(
+                                                    width: 60,
+                                                    height: 60,
+                                                    color: Colors.grey[200],
+                                                    child: const Icon(
+                                                      Icons.image,
+                                                      size: 30,
+                                                      color: Colors.grey,
+                                                    ),
                                                   ),
                                           ),
                                           const SizedBox(width: 12),
@@ -289,27 +315,30 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  'Item: ${item.product.name}',
+                                                  item.product.name,
                                                   style: const TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.black87,
                                                   ),
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                const SizedBox(height: 4),
+                                                const SizedBox(height: 8),
                                                 Text(
                                                   'Quantity: ${item.quantity}',
-                                                  style: const TextStyle(
+                                                  style: TextStyle(
                                                     fontSize: 14,
-                                                    color: Colors.black54,
+                                                    color: Colors.grey[600],
                                                   ),
                                                 ),
-                                                const SizedBox(height: 4),
+                                                const SizedBox(height: 8),
                                                 Text(
-                                                  'Price: \$${item.product.price.toStringAsFixed(2)}',
-                                                  style: const TextStyle(
+                                                  '\$${item.product.price.toStringAsFixed(2)}',
+                                                  style: TextStyle(
                                                     fontSize: 14,
-                                                    color: Colors.black54,
+                                                    color: primaryColor,
+                                                    fontWeight: FontWeight.w600,
                                                   ),
                                                 ),
                                               ],
@@ -324,22 +353,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               const SizedBox(height: 16),
                               // Price Breakdown
                               Card(
-                                elevation: 2,
+                                elevation: 4,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
                                     children: [
-                                      _buildPriceRow(
-                                          'Item total:', totalPrice, false),
-                                      const SizedBox(height: 8),
-                                      _buildPriceRow(
-                                          'Shipping:', shippingPrice, false),
+                                      _buildPriceRow('Item total:', totalPrice,
+                                          false, primaryColor),
+                                      const SizedBox(height: 12),
+                                      _buildPriceRow('Shipping:', shippingPrice,
+                                          false, primaryColor),
                                       const Divider(height: 24),
-                                      _buildPriceRow(
-                                          'Total price:', finalPrice, true),
+                                      _buildPriceRow('Total price:', finalPrice,
+                                          true, primaryColor),
                                     ],
                                   ),
                                 ),
@@ -349,39 +378,43 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           ),
                         ),
                       ),
-                      // Pay Now Button
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _makePayment,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.greenAccent,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 2,
-                            ),
-                            child: const Text(
-                              'Pay Now',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
+      bottomNavigationBar: !isLoading && errorMessage == null
+          ? Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                  ),
+                ],
+              ),
+              child: ElevatedButton(
+                onPressed: _makePayment,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(
+                  'Pay Now (\$${finalPrice.toStringAsFixed(2)})',
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+              ),
+            )
+          : null,
     );
   }
 
-  Widget _buildProgressStep(String label, bool isActive) {
+  Widget _buildProgressStep(String label, bool isActive, Color primaryColor) {
     return Column(
       children: [
         Container(
@@ -389,24 +422,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
           height: 24,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isActive ? Colors.blue : Colors.grey[300],
+            color: isActive ? primaryColor : Colors.grey[300],
           ),
           child: isActive
-              ? const Icon(
-                  Icons.circle,
+              ? Icon(
+                  Icons.check_circle,
                   size: 24,
-                  color: Colors.greenAccent,
+                  color: Colors.white,
                 )
               : const SizedBox(),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
           label,
           style: TextStyle(
             fontSize: 14,
-            color: isActive
-                ? const Color.fromARGB(255, 17, 225, 173)
-                : Colors.grey,
+            color: isActive ? primaryColor : Colors.grey[600],
             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -414,7 +445,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  Widget _buildPriceRow(String label, double price, bool isTotal) {
+  Widget _buildPriceRow(
+      String label, double price, bool isTotal, Color primaryColor) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -431,9 +463,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           style: TextStyle(
             fontSize: isTotal ? 18 : 16,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: isTotal
-                ? const Color.fromARGB(255, 17, 225, 173)
-                : Colors.black54,
+            color: isTotal ? primaryColor : Colors.black54,
           ),
         ),
       ],
