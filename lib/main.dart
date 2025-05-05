@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:pim/models/doctor.dart';
+import 'package:pim/screens/doctor_detail_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/doctors_screen.dart';
@@ -75,6 +77,9 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginScreen(),
           '/signup': (context) => SignupScreen(),
           '/doctors': (context) => DoctorsScreen(),
+          '/doctor_detail': (context) => DoctorDetailScreen(
+                doctor: ModalRoute.of(context)!.settings.arguments as Doctor,
+              ), // Add this route
         },
         debugShowCheckedModeBanner: false,
       ),

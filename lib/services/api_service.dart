@@ -414,4 +414,33 @@ class ApiService {
       throw Exception('Failed to load Sudoku puzzle: ${response.statusCode}');
     }
   }
+
+  Future<Map<String, dynamic>> bookAppointment({
+    required String doctorId,
+    required DateTime date,
+    required String time,
+    required String meetingType,
+  }) async {
+    try {
+      final response = await _makeRequest(() => http.post(
+            Uri.parse('$baseUrl/appointments/create'),
+            headers: _getHeaders(),
+            body: json.encode({
+              'doctorId': doctorId,
+              'date': date.toIso8601String(),
+              'time': time,
+              'meetingType': meetingType,
+            }),
+          ));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to book appointment: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error booking appointment: $e');
+      throw Exception('Failed to book appointment: $e');
+    }
+  }
 }
