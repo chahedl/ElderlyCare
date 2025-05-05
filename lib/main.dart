@@ -1,4 +1,5 @@
 import 'package:flareline/core/theme/global_theme.dart';
+import 'package:flareline/pages/auth/sign_in/sign_in_provider.dart';
 import 'package:flareline_uikit/service/localization_provider.dart';
 import 'package:flareline/routes.dart';
 import 'package:flareline_uikit/service/theme_provider.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider(_)),
         ChangeNotifierProvider(create: (_) => LocalizationProvider(_)),
+        ChangeNotifierProvider(create: (_) => SignInProvider(_)),
       ],
       child: Builder(builder: (context) {
         context.read<LocalizationProvider>().supportedLocales =
@@ -51,7 +53,7 @@ class MyApp extends StatelessWidget {
           restorationScopeId: 'AdminElederlyCare',
           title: 'ElderlyCareADMIN',
           debugShowCheckedModeBanner: false,
-          initialRoute: '/signIn', // Changed to start at the sign-in page
+          initialRoute: '/signIn',
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           locale: context.watch<LocalizationProvider>().locale,
           supportedLocales: AppLocalizations.supportedLocales,

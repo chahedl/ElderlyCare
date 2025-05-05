@@ -16,7 +16,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alertsMessage => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry';
 
   @override
-  String get appName => 'FlareLine';
+  String get appName => 'ElderlyCare';
 
   @override
   String get slogan => 'Simple web, develop faster';
@@ -58,7 +58,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startForFree => 'Start for free';
 
   @override
-  String get signUpTip => 'Sign Up to FlareLine';
+  String get signUpTip => 'Sign Up to ElderlyCare';
 
   @override
   String get retypePassword => 'Re-type Password';
@@ -227,9 +227,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fullNameHint => 'Enter your full name';
-
-  @override
-  String get profile => 'Profile';
 
   @override
   String get edit => 'Edit';

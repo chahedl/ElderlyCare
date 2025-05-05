@@ -229,9 +229,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get fullNameHint => 'Nhập tên đầy đủ của bạn';
 
   @override
-  String get profile => 'Hồ sơ';
-
-  @override
   String get edit => 'Sửa';
 
   @override

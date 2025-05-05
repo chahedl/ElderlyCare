@@ -30,7 +30,6 @@ class EcommercePage extends LayoutWidget {
       SizedBox(
         height: 16,
       ),
-      ChannelWidget()
     ]);
   }
 }

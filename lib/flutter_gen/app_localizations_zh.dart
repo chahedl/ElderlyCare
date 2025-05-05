@@ -229,9 +229,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fullNameHint => '输入您的全名';
 
   @override
-  String get profile => '个人资料';
-
-  @override
   String get edit => '编辑';
 
   @override

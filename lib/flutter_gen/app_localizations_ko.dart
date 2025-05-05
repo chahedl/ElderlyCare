@@ -229,9 +229,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fullNameHint => '전체 이름을 입력하세요';
 
   @override
-  String get profile => '프로필';
-
-  @override
   String get edit => '편집';
 
   @override

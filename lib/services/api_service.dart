@@ -80,4 +80,34 @@ class ApiService {
       return [];
     }
   }
+
+  // Fetch total products
+  Future<int> getTotalProducts() async {
+    final uri = Uri.parse('$baseUrl/products/count');
+    final response = await _makeRequest(
+      () => http.get(uri, headers: _getHeaders()),
+    );
+    try {
+      final data = json.decode(response.body);
+      return data['count'] as int;
+    } catch (e) {
+      print('Error parsing total products: $e');
+      return 0;
+    }
+  }
+
+  // Fetch total users
+  Future<int> getTotalUsers() async {
+    final uri = Uri.parse('$baseUrl/users/count');
+    final response = await _makeRequest(
+      () => http.get(uri, headers: _getHeaders()),
+    );
+    try {
+      final data = json.decode(response.body);
+      return data['count'] as int;
+    } catch (e) {
+      print('Error parsing total users: $e');
+      return 0;
+    }
+  }
 }

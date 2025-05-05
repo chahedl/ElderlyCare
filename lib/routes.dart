@@ -14,13 +14,11 @@ import 'package:flareline/pages/auth/sign_in/sign_in_page.dart'
     deferred as signIn;
 import 'package:flareline/pages/auth/sign_up/sign_up_page.dart'
     deferred as signUp;
-import 'package:flareline/pages/calendar/calendar_page.dart'
-    deferred as calendar;
+
 import 'package:flareline/pages/chart/chart_page.dart' deferred as chart;
 import 'package:flareline/pages/dashboard/ecommerce_page.dart';
 import 'package:flareline/pages/inbox/index.dart' deferred as inbox;
 import 'package:flareline/pages/invoice/invoice_page.dart' deferred as invoice;
-import 'package:flareline/pages/profile/profile_page.dart' deferred as profile;
 import 'package:flareline/pages/resetpwd/reset_pwd_page.dart'
     deferred as resetPwd;
 import 'package:flareline/pages/setting/settings_page.dart'
@@ -32,15 +30,6 @@ typedef PathWidgetBuilder = Widget Function(BuildContext, String?);
 
 final List<Map<String, Object>> MAIN_PAGES = [
   {'routerPath': '/', 'widget': const EcommercePage()},
-  {
-    'routerPath': '/calendar',
-    'widget':
-        DeferredWidget(calendar.loadLibrary, () => calendar.CalendarPage())
-  },
-  {
-    'routerPath': '/profile',
-    'widget': DeferredWidget(profile.loadLibrary, () => profile.ProfilePage())
-  },
   {
     'routerPath': '/formElements',
     'widget': DeferredWidget(
@@ -60,11 +49,6 @@ final List<Map<String, Object>> MAIN_PAGES = [
     'widget': DeferredWidget(signUp.loadLibrary, () => signUp.SignUpWidget())
   },
   {
-    'routerPath': '/resetPwd',
-    'widget':
-        DeferredWidget(resetPwd.loadLibrary, () => resetPwd.ResetPwdWidget()),
-  },
-  {
     'routerPath': '/invoice',
     'widget': DeferredWidget(invoice.loadLibrary, () => invoice.InvoicePage())
   },
@@ -75,11 +59,6 @@ final List<Map<String, Object>> MAIN_PAGES = [
   {
     'routerPath': '/tables',
     'widget': DeferredWidget(tables.loadLibrary, () => tables.TablesPage())
-  },
-  {
-    'routerPath': '/settings',
-    'widget':
-        DeferredWidget(settings.loadLibrary, () => settings.SettingsPage())
   },
   {
     'routerPath': '/basicChart',

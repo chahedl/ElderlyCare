@@ -229,9 +229,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get fullNameHint => 'Masukkan nama lengkap Anda';
 
   @override
-  String get profile => 'Profil';
-
-  @override
   String get edit => 'Ubah';
 
   @override

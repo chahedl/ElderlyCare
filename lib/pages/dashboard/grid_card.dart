@@ -1,19 +1,36 @@
-
-import 'package:flareline/core/theme/global_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flareline/core/theme/global_colors.dart';
 import 'package:flareline_uikit/components/card/common_card.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:flareline/flutter_gen/app_localizations.dart';
+import '/services/api_service.dart'; // Ensure this path is correct
 
-class GridCard extends StatelessWidget {
+class GridCard extends StatefulWidget {
   const GridCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  _GridCardState createState() => _GridCardState();
+}
+
+class _GridCardState extends State<GridCard> {
+  late ApiService apiService;
+  late Future<int> totalUsers;
+  late Future<int> totalProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    apiService = ApiService(baseUrl: 'http://localhost:2000/api');
+    totalUsers = apiService.getTotalUsers();
+    totalProducts = apiService.getTotalProducts();
+  }
+
+  @override
+  Widget build(BuildContext loudspeakercontext) {
     return ScreenTypeLayout.builder(
-      desktop: contentDesktopWidget,
-      mobile: contentMobileWidget,
-      tablet: contentMobileWidget,
+      desktop: (context) => contentDesktopWidget(context),
+      mobile: (context) => contentMobileWidget(context),
+      tablet: (context) => contentMobileWidget(context),
     );
   }
 
@@ -21,26 +38,46 @@ class GridCard extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-            child: _itemCardWidget(context,Icons.data_object, '\$3.456K',
-                AppLocalizations.of(context)!.totalViews, '0.43%', true)),
-        const SizedBox(
-          width: 16,
+          child: FutureBuilder<int>(
+            future: totalProducts,
+            builder: (context, snapshot) {
+              String productCount = snapshot.hasData ? '${snapshot.data}' : '0';
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error loading products'));
+              }
+              return _itemCardWidget(
+                context,
+                Icons.group,
+                productCount,
+                AppLocalizations.of(context)!.totalProduct,
+              );
+            },
+          ),
         ),
+        const SizedBox(width: 16),
         Expanded(
-            child: _itemCardWidget(context,Icons.shopping_cart, '\$45.2K',
-                AppLocalizations.of(context)!.totalProfit, '0.43%', true)),
-        const SizedBox(
-          width: 16,
+          child: FutureBuilder<int>(
+            future: totalUsers,
+            builder: (context, snapshot) {
+              String userCount = snapshot.hasData ? '${snapshot.data}' : '0';
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error loading users'));
+              }
+              return _itemCardWidget(
+                context,
+                Icons.security_rounded,
+                userCount,
+                AppLocalizations.of(context)!.totalUsers,
+              );
+            },
+          ),
         ),
-        Expanded(
-            child: _itemCardWidget(context,Icons.group, '2.450',
-                AppLocalizations.of(context)!.totalProduct, '0.43%', true)),
-        const SizedBox(
-          width: 16,
-        ),
-        Expanded(
-            child: _itemCardWidget(context,Icons.security_rounded, '3.456',
-                AppLocalizations.of(context)!.totalUsers, '0.43%', false)),
       ],
     );
   }
@@ -48,29 +85,49 @@ class GridCard extends StatelessWidget {
   Widget contentMobileWidget(BuildContext context) {
     return Column(
       children: [
-        _itemCardWidget(context, Icons.data_object, '\$3.456K',
-            AppLocalizations.of(context)!.totalViews, '0.43%', true),
-        const SizedBox(
-          height: 16,
+        FutureBuilder<int>(
+          future: totalProducts,
+          builder: (context, snapshot) {
+            String productCount = snapshot.hasData ? '${snapshot.data}' : '0';
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return const Center(child: Text('Error loading products'));
+            }
+            return _itemCardWidget(
+              context,
+              Icons.group,
+              productCount,
+              AppLocalizations.of(context)!.totalProduct,
+            );
+          },
         ),
-        _itemCardWidget(context, Icons.shopping_cart, '\$45.2K',
-            AppLocalizations.of(context)!.totalProfit, '0.43%', true),
-        const SizedBox(
-          height: 16,
+        const SizedBox(height: 16),
+        FutureBuilder<int>(
+          future: totalUsers,
+          builder: (context, snapshot) {
+            String userCount = snapshot.hasData ? '${snapshot.data}' : '0';
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return const Center(child: Text('Error loading users'));
+            }
+            return _itemCardWidget(
+              context,
+              Icons.security_rounded,
+              userCount,
+              AppLocalizations.of(context)!.totalUsers,
+            );
+          },
         ),
-        _itemCardWidget(context, Icons.group, '2.450',
-            AppLocalizations.of(context)!.totalProduct, '0.43%', true),
-        const SizedBox(
-          height: 16,
-        ),
-        _itemCardWidget(context, Icons.security_rounded, '3.456',
-            AppLocalizations.of(context)!.totalUsers, '0.43%', false),
       ],
     );
   }
 
-  _itemCardWidget(BuildContext context, IconData icons, String text,
-      String subTitle, String percentText, bool isGrow) {
+  Widget _itemCardWidget(
+      BuildContext context, IconData icons, String text, String subTitle) {
     return CommonCard(
       height: 166,
       child: Padding(
@@ -87,43 +144,20 @@ class GridCard extends StatelessWidget {
                 color: Colors.grey.shade200,
                 child: Icon(
                   icons,
-                  color:GlobalColors.sideBar,
+                  color: GlobalColors.sideBar,
                 ),
               ),
             ),
-            const SizedBox(
-              height: 12,
-            ),
+            const SizedBox(height: 12),
             Text(
               text,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(
-              height: 6,
+            const SizedBox(height: 6),
+            Text(
+              subTitle,
+              style: const TextStyle(fontSize: 10, color: Colors.grey),
             ),
-            Row(
-              children: [
-                Text(
-                  subTitle,
-                  style: const TextStyle(fontSize: 10, color: Colors.grey),
-                ),
-                const Spacer(),
-                Text(
-                  percentText,
-                  style: TextStyle(
-                      fontSize: 10,
-                      color: isGrow ? Colors.green : Colors.lightBlue),
-                ),
-                const SizedBox(
-                  width: 3,
-                ),
-                Icon(
-                  isGrow ? Icons.arrow_upward : Icons.arrow_downward,
-                  color: isGrow ? Colors.green : Colors.lightBlue,
-                  size: 12,
-                )
-              ],
-            )
           ],
         ),
       ),

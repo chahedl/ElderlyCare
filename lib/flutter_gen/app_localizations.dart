@@ -132,7 +132,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'FlareLine'**
+  /// **'ElderlyCare'**
   String get appName;
 
   /// No description provided for @slogan.
@@ -216,7 +216,7 @@ abstract class AppLocalizations {
   /// No description provided for @signUpTip.
   ///
   /// In en, this message translates to:
-  /// **'Sign Up to FlareLine'**
+  /// **'Sign Up to ElderlyCare'**
   String get signUpTip;
 
   /// No description provided for @retypePassword.
@@ -554,12 +554,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your full name'**
   String get fullNameHint;
-
-  /// No description provided for @profile.
-  ///
-  /// In en, this message translates to:
-  /// **'Profile'**
-  String get profile;
 
   /// No description provided for @edit.
   ///
