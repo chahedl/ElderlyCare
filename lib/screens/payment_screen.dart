@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe
-    hide Card; // Hide Card to avoid conflict
+    hide Card;
 import 'package:pim/screens/OrderConfirmationScreen.dart';
 import '../models/cart_model.dart';
 import 'package:dio/dio.dart';
-import './OrderConfirmationScreen.dart';
 
 class PaymentScreen extends StatefulWidget {
   final List<CartItem> cartItems;

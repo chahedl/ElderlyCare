@@ -12,18 +12,25 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <!-- <queries> should be under <manifest>, not inside <application> -->
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
-        </intent>
-        <intent>
-            <action android:name="android.speech.RecognitionService" />
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.TTS_SERVICE" />
-        </intent>
-    </queries>
+<queries>
+    <intent>
+        <action android:name="android.intent.action.PROCESS_TEXT"/>
+        <data android:mimeType="text/plain"/>
+    </intent>
+
+    <intent>
+        <action android:name="android.speech.RecognitionService" />
+    </intent>
+
+    <intent>
+        <action android:name="android.intent.action.TTS_SERVICE" />
+    </intent>
+
+    <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="https" />
+    </intent>
+</queries>
 
     <application
         android:label="pim"

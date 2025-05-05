@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/doctor.dart';
 import '../pages/home_bot.dart';
-import 'doctor_detail_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../pages/chatscreen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -13,7 +12,6 @@ import 'marketplace_screen.dart';
 import '../pages/pharmacy_screen.dart';
 import '../pages/emergency_button_screen.dart';
 import 'exercises_screen.dart';
-import 'sudoku_screen.dart';
 import 'games_screen.dart';
 import '../viewmodels/doctor_viewmodel.dart';
 

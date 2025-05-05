@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/doctor_viewmodel.dart';
 import '../models/doctor.dart';
-
+import '/screens/doctor_detail_screen.dart';
 class DoctorsScreen extends StatefulWidget {
   const DoctorsScreen({Key? key}) : super(key: key);
 
@@ -198,14 +198,19 @@ class DoctorCard extends StatelessWidget {
                 Text(' ${doctor.rating.toStringAsFixed(1)}'),
                 SizedBox(width: 16),
                 Icon(Icons.location_on, size: 16),
-                Text(' 800m away'),
+                Text(' 800m away'), // You can update this dynamically later
               ],
             ),
           ],
         ),
         trailing: Icon(Icons.chevron_right),
         onTap: () {
-          // Navigate to doctor details screenr
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DoctorDetailScreen(doctor: doctor),
+            ),
+          );
         },
       ),
     );

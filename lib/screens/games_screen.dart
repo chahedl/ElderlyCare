@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'sudoku_screen.dart';
 
-import 'package:flutter/material.dart';
 import 'horoscope_screen.dart';
 import 'facts_screen.dart';
 import 'trivia_screen.dart';

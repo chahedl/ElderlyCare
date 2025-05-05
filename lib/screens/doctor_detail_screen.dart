@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import '../models/doctor.dart';
-import '../services/api_service.dart';
 import '../viewmodels/login_viewmodel.dart'; // To access token
 
 class DoctorDetailScreen extends StatefulWidget {

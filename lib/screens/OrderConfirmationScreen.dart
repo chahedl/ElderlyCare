@@ -17,7 +17,7 @@ class OrderConfirmationScreen extends StatelessWidget {
   }
 
   double getShippingPrice() {
-    return 21.00; // Fixed as per screenshot
+    return 21.00; 
   }
 
   @override
@@ -29,7 +29,7 @@ class OrderConfirmationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        automaticallyImplyLeading: false, // No back button
+        automaticallyImplyLeading: false, 
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -59,7 +59,7 @@ class OrderConfirmationScreen extends StatelessWidget {
               ),
               child: const Icon(
                 Icons.check,
-                color: Colors.white, // Fixed the color property
+                color: Colors.white, 
                 size: 40,
               ),
             ),

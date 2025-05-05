@@ -3,8 +3,7 @@ import '../models/cart_model.dart';
 
 class CartViewModel {
   final Dio _dio = Dio();
-  final String apiUrl =
-      "http://10.0.2.2:2000/api/carts"; // Use 10.0.2.2 for emulator
+  final String apiUrl = "http://10.0.2.2:2000/api/carts";
   final String token;
 
   CartViewModel(this.token);
