@@ -1,11 +1,14 @@
+// lib/widgets/revenue_widget.dart
 import 'package:flutter/material.dart';
 import 'package:flareline_uikit/components/card/common_card.dart';
-import '/components/charts/bar_chart.dart';
 import 'package:provider/provider.dart';
-import '/services/api_service.dart';
-import 'chart_data_provider.dart';
-import 'bmi_view_model.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:fl_chart/fl_chart.dart';
+import '/services/api_service.dart';
+import '/pages/top_analytics_view_model.dart';
+import 'bmi_view_model.dart';
+import 'chart_data_provider.dart';
+import '/components/charts/bar_chart.dart';
 import 'package:flareline_uikit/components/charts/line_chart.dart';
 
 class RevenueWidget extends StatefulWidget {
@@ -16,28 +19,31 @@ class RevenueWidget extends StatefulWidget {
 }
 
 class _RevenueWidgetState extends State<RevenueWidget> {
-  late final BMIViewModel viewModel;
+  late final TopAnalyticsViewModel topAnalyticsViewModel;
+  late final BMIViewModel bmiViewModel;
 
   @override
   void initState() {
     super.initState();
-    viewModel = BMIViewModel(ApiService(baseUrl: 'http://localhost:2000/api'));
-    viewModel.addListener(() => setState(() {}));
-    viewModel.fetchBMIAnalytics();
+    topAnalyticsViewModel =
+        TopAnalyticsViewModel(ApiService(baseUrl: 'http://localhost:2000/api'));
+    bmiViewModel =
+        BMIViewModel(ApiService(baseUrl: 'http://localhost:2000/api'));
+    topAnalyticsViewModel.addListener(() => setState(() {}));
+    bmiViewModel.addListener(() => setState(() {}));
+    topAnalyticsViewModel.fetchTopAnalytics();
+    bmiViewModel.fetchBMIAnalytics();
   }
 
   @override
   void dispose() {
-    viewModel.dispose();
+    topAnalyticsViewModel.dispose();
+    bmiViewModel.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _revenueWidget(context);
-  }
-
-  Widget _revenueWidget(BuildContext context) {
     return ScreenTypeLayout.builder(
       desktop: _revenueWidgetDesktop,
       mobile: _revenueWidgetMobile,
@@ -51,13 +57,19 @@ class _RevenueWidgetState extends State<RevenueWidget> {
       child: Row(
         children: [
           Expanded(
-            child: _lineChart(),
             flex: 2,
+            child: _topAnalyticsChart(
+                context), // Top Analytics (Most Bought, Most Booked)
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: _barChart(context),
-            flex: 1,
+            flex: 2,
+            child: _bmiChart(context), // BMI Chart
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 2,
+            child: _lineChart(), // Existing Line Chart
           ),
         ],
       ),
@@ -65,18 +77,130 @@ class _RevenueWidgetState extends State<RevenueWidget> {
   }
 
   Widget _revenueWidgetMobile(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 360,
-          child: _lineChart(),
-        ),
-        const SizedBox(height: 16),
-        SizedBox(
-          height: 360,
-          child: _barChart(context),
-        ),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(
+            height: 360,
+            child: _topAnalyticsChart(context), // Top Analytics
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 360,
+            child: _bmiChart(context), // BMI Chart
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 360,
+            child: _lineChart(), // Existing Line Chart
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _topAnalyticsChart(BuildContext context) {
+    return CommonCard(
+      child: topAnalyticsViewModel.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : topAnalyticsViewModel.errorMessage != null
+              ? Center(child: Text(topAnalyticsViewModel.errorMessage!))
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Top Analytics',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF199A8E),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: BarChart(
+                          BarChartData(
+                            alignment: BarChartAlignment.spaceAround,
+                            maxY: _getMaxY(),
+                            barGroups: [
+                              BarChartGroupData(
+                                x: 0,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: topAnalyticsViewModel
+                                        .mostBoughtProduct!['y']
+                                        .toDouble(),
+                                    color: const Color(0xFF199A8E),
+                                    width: 40,
+                                  ),
+                                ],
+                              ),
+                              BarChartGroupData(
+                                x: 1,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: topAnalyticsViewModel
+                                        .mostBookedDoctor!['y']
+                                        .toDouble(),
+                                    color: const Color(0xFF01B7F9),
+                                    width: 40,
+                                  ),
+                                ],
+                              ),
+                            ],
+                            titlesData: FlTitlesData(
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) => Text(
+                                    value.toInt().toString(),
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  reservedSize: 40,
+                                ),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) => Text(
+                                    value == 0
+                                        ? topAnalyticsViewModel
+                                            .mostBoughtProduct!['x']
+                                        : topAnalyticsViewModel
+                                            .mostBookedDoctor!['x'],
+                                    style: const TextStyle(fontSize: 14),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  reservedSize: 60,
+                                ),
+                              ),
+                              topTitles: const AxisTitles(),
+                              rightTitles: const AxisTitles(),
+                            ),
+                            borderData: FlBorderData(show: false),
+                            gridData: const FlGridData(show: false),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+    );
+  }
+
+  Widget _bmiChart(BuildContext context) {
+    return CommonCard(
+      child: bmiViewModel.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : bmiViewModel.errorMessage != null
+              ? Center(child: Text(bmiViewModel.errorMessage!))
+              : ChangeNotifierProvider(
+                  create: (context) => ChartDataProvider(bmiViewModel.bmiStats),
+                  child: const BarChartWidget(),
+                ),
     );
   }
 
@@ -127,16 +251,11 @@ class _RevenueWidgetState extends State<RevenueWidget> {
     );
   }
 
-  Widget _barChart(BuildContext context) {
-    return CommonCard(
-      child: viewModel.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : viewModel.errorMessage != null
-              ? Center(child: Text(viewModel.errorMessage!))
-              : ChangeNotifierProvider(
-                  create: (context) => ChartDataProvider(viewModel.bmiStats),
-                  child: const BarChartWidget(),
-                ),
-    );
+  double _getMaxY() {
+    final productY =
+        topAnalyticsViewModel.mostBoughtProduct?['y']?.toDouble() ?? 0;
+    final doctorY =
+        topAnalyticsViewModel.mostBookedDoctor?['y']?.toDouble() ?? 0;
+    return (productY > doctorY ? productY : doctorY) * 1.2; // Add 20% padding
   }
 }

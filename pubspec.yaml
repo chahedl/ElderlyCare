@@ -107,6 +107,7 @@ dependencies:
   
   flareline_uikit:
    path: FlareLine-UiKit
+  fl_chart: ^0.71.0
 
 
 dependency_overrides:

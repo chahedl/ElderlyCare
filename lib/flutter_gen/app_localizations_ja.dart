@@ -229,6 +229,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fullNameHint => 'フルネームを入力してください';
 
   @override
+  String get profile => 'プロフィール';
+
+  @override
   String get edit => '編集';
 
   @override

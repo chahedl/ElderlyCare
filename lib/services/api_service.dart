@@ -1,3 +1,4 @@
+// lib/services/api_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -37,6 +38,43 @@ class ApiService {
     }
   }
 
+  // Fetch most bought product
+  Future<Map<String, dynamic>> getMostBoughtProduct() async {
+    final uri = Uri.parse('$baseUrl/cart/analytics/most-bought');
+    final response = await _makeRequest(
+      () => http.get(uri, headers: _getHeaders()),
+    );
+    try {
+      final json = jsonDecode(response.body);
+      return {
+        'x': json['x']?.toString() ?? 'No Products',
+        'y': (json['y'] as num?)?.toInt() ?? 0,
+      };
+    } catch (e) {
+      print('Error parsing most bought product: $e');
+      return {'x': 'No Products', 'y': 0};
+    }
+  }
+
+  // Fetch most booked doctor
+  Future<Map<String, dynamic>> getMostBookedDoctor() async {
+    final uri = Uri.parse('$baseUrl/appointments/analytics/most-booked');
+    final response = await _makeRequest(
+      () => http.get(uri, headers: _getHeaders()),
+    );
+    try {
+      final json = jsonDecode(response.body);
+      return {
+        'x': json['x']?.toString() ?? 'No Doctors',
+        'y': (json['y'] as num?)?.toInt() ?? 0,
+      };
+    } catch (e) {
+      print('Error parsing most booked doctor: $e');
+      return {'x': 'No Doctors', 'y': 0};
+    }
+  }
+
+  // Existing methods (unchanged)
   Future<List<Map<String, dynamic>>> getSpecializationAnalytics() async {
     final uri = Uri.parse('$baseUrl/doctors/analytics/specialization');
     final response = await _makeRequest(
@@ -81,7 +119,6 @@ class ApiService {
     }
   }
 
-  // Fetch total products
   Future<int> getTotalProducts() async {
     final uri = Uri.parse('$baseUrl/products/count');
     final response = await _makeRequest(
@@ -96,7 +133,6 @@ class ApiService {
     }
   }
 
-  // Fetch total users
   Future<int> getTotalUsers() async {
     final uri = Uri.parse('$baseUrl/users/count');
     final response = await _makeRequest(

@@ -229,6 +229,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fullNameHint => 'أدخل اسمك الكامل';
 
   @override
+  String get profile => 'الملف الشخصي';
+
+  @override
   String get edit => 'تحرير';
 
   @override

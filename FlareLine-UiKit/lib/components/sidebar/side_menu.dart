@@ -85,7 +85,7 @@ class SideMenuWidget extends StatelessWidget {
                       width: 18,
                       height: 18,
                       color:
-                      isDark ? Colors.white : FlarelineColors.darkBlackText,
+                      isDark ? Colors.white : const Color.fromARGB(255, 31, 240, 167),
                     ),
                   ),
                 Expanded(

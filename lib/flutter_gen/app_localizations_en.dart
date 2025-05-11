@@ -229,6 +229,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fullNameHint => 'Enter your full name';
 
   @override
+  String get profile => 'Profile';
+
+  @override
   String get edit => 'Edit';
 
   @override

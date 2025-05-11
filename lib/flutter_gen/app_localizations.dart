@@ -555,6 +555,12 @@ abstract class AppLocalizations {
   /// **'Enter your full name'**
   String get fullNameHint;
 
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
   /// No description provided for @edit.
   ///
   /// In en, this message translates to:

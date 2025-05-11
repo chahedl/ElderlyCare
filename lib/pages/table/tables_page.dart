@@ -15,10 +15,7 @@ class TablesPage extends LayoutWidget {
   Widget contentDesktopWidget(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 450, width: double.maxFinite, child: TopChannelWidget()),
-        const SizedBox(
-          height: 16,
-        ),
+
         const SizedBox(height: 450, width: double.maxFinite,  child:TopProductsWidget()),
         const SizedBox(
           height: 16,
