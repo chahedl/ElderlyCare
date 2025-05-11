@@ -8,9 +8,11 @@ import 'package:pim/screens/login_screen.dart';
 import 'package:pim/screens/signup_screen.dart';
 import 'package:pim/screens/doctors_screen.dart';
 import 'package:pim/screens/bottom_tab_bar.dart';
+import 'package:pim/screens/appointments_screen.dart';
 import 'package:pim/services/notification_service.dart';
 import 'package:pim/viewmodels/login_viewmodel.dart';
 import 'package:pim/viewmodels/doctor_viewmodel.dart';
+import 'package:pim/viewmodels/appointment_viewmodel.dart';
 import 'package:pim/services/api_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
@@ -81,6 +83,11 @@ class MyApp extends StatelessWidget {
                 );
           },
         ),
+        ChangeNotifierProvider(
+          create: (context) => AppointmentViewModel(
+            apiService: ApiService(initialToken, notificationService),
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => PharmacyViewModel()),
         Provider(
           create: (_) => WeatherService(
@@ -116,6 +123,10 @@ class MyApp extends StatelessWidget {
               ),
           '/pharmacies': (context) => const PharmacyScreen(),
           '/pill_reminders': (context) => const PillReminderScreen(),
+          '/appointments': (context) => AppointmentsScreen(
+                token: initialToken,
+                notificationService: notificationService,
+              ),
         },
         debugShowCheckedModeBanner: false,
       ),

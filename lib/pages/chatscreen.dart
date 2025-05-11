@@ -196,7 +196,7 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         backgroundColor: primaryColor,
         title: const Text(
-          'Chat with Assistant',
+          'Chat with Loved One',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,

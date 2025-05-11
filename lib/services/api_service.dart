@@ -491,4 +491,28 @@ class ApiService {
       throw Exception('Failed to notify caregiver');
     }
   }
+
+  Future<List<Map<String, dynamic>>> getAppointments() async {
+    try {
+      final response = await _makeRequest(() => http.get(
+            Uri.parse('$baseUrl/appointments'),
+            headers: _getHeaders(),
+          ));
+
+      print('Appointments response: ${response.body}');
+      if (response.statusCode == 200) {
+        final dynamic decodedBody = json.decode(response.body);
+        if (decodedBody is! List) {
+          throw Exception(
+              'Invalid response format: Expected array of appointments');
+        }
+        return decodedBody.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Failed to load appointments: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching appointments: $e');
+      throw Exception('Failed to fetch appointments: $e');
+    }
+  }
 }

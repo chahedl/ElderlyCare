@@ -36,6 +36,9 @@ dependencies:
   simple_chess_board: ^1.7.0
   chess: ^0.8.1
   share_plus: ^11.0.0
+  pdf: ^3.11.3
+  open_file: ^3.5.10
+  open_file_plus: ^3.4.1+1
   
 dev_dependencies:
   build_runner: ^2.4.15

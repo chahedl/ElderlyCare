@@ -1,5 +1,6 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:pim/screens/appointments_screen.dart';
 import '../models/doctor.dart';
 import '../pages/home_bot.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -301,6 +302,19 @@ class _HomeContentState extends State<HomeContent> {
                   builder: (context) => const PillReminderScreen()),
             );
           }),
+          const SizedBox(width: 8),
+          _categoryIcon(Icons.calendar_today, 'Appointments', primaryColor,
+              onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AppointmentsScreen(
+                  token: widget.token,
+                  notificationService: widget.notificationService,
+                ),
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -389,7 +403,7 @@ class _HomeContentState extends State<HomeContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionHeader('Your Doctors', primaryColor),
+        _sectionHeader(context, 'Your Doctors', primaryColor), // Pass context
         const SizedBox(height: 16),
         Container(
           height: 200,
@@ -432,7 +446,8 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
-  Widget _sectionHeader(String title, Color primaryColor) {
+  Widget _sectionHeader(
+      BuildContext context, String title, Color primaryColor) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -446,7 +461,7 @@ class _HomeContentState extends State<HomeContent> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/doctors');
+            Navigator.pushNamed(context, '/doctors'); // Use passed context
           },
           child: Text(
             'See all',
