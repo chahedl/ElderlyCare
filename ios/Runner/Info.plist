@@ -62,5 +62,12 @@
   <string>fetch</string>
   <string>remote-notification</string>
 </array>
+<key>UIBackgroundModes</key>
+<array>
+    <string>fetch</string>
+    <string>remote-notification</string>
+</array>
+<key>NSUserNotificationUsageDescription</key>
+<string>We need your permission to send pill reminders.</string>
 </dict>
 </plist>

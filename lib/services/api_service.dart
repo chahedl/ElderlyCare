@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'package:pim/models/Medication.dart';
 import '../models/user.dart';
 import '../models/product_model.dart';
 import 'notification_service.dart';
@@ -441,6 +442,53 @@ class ApiService {
     } catch (e) {
       print('Error booking appointment: $e');
       throw Exception('Failed to book appointment: $e');
+    }
+  }
+
+  Future<void> addMedication(Medication medication, String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/medications'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(medication.toMap()),
+    );
+    if (response.statusCode != 201) {
+      throw Exception('Failed to add medication');
+    }
+  }
+
+  Future<void> updateMedication(Medication medication, String token) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/medications/${medication.id}'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(medication.toMap()),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update medication');
+    }
+  }
+
+  Future<void> notifyCaregiverMissedDose(
+      Medication medication, String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/notifications/missed-dose'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'medicationId': medication.id,
+        'name': medication.name,
+        'time': medication.time.toIso8601String(),
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to notify caregiver');
     }
   }
 }

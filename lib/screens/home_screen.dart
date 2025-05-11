@@ -1,3 +1,4 @@
+// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import '../models/doctor.dart';
 import '../pages/home_bot.dart';
@@ -14,6 +15,7 @@ import '../pages/emergency_button_screen.dart';
 import 'exercises_screen.dart';
 import 'games_screen.dart';
 import '../viewmodels/doctor_viewmodel.dart';
+import 'pill_reminder_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String token;
@@ -35,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     HomeContent(
       token: widget.token,
       notificationService: widget.notificationService,
-      motivationalQuote: motivationalQuote, // Pass quote to HomeContent
+      motivationalQuote: motivationalQuote,
     ),
     HomeBot(),
     ProfileScreen(token: widget.token),
@@ -55,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
       final quote = await apiService.fetchMotivationalQuote();
       setState(() {
         motivationalQuote = quote;
-        // Update _screens to reflect new quote
         _screens[0] = HomeContent(
           token: widget.token,
           notificationService: widget.notificationService,
@@ -247,45 +248,61 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildCategoryRow(BuildContext context, Color primaryColor) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _categoryIcon(Icons.local_hospital, 'Doctor', primaryColor,
-            onTap: () => Navigator.pushNamed(context, '/doctors')),
-        _categoryIcon(Icons.shopping_bag, 'Marketplace', primaryColor,
-            onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MarketplaceScreen(
-                token: widget.token,
-                notificationService: widget.notificationService,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _categoryIcon(Icons.local_hospital, 'Doctor', primaryColor,
+              onTap: () => Navigator.pushNamed(context, '/doctors')),
+          const SizedBox(width: 8),
+          _categoryIcon(Icons.shopping_bag, 'Marketplace', primaryColor,
+              onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MarketplaceScreen(
+                  token: widget.token,
+                  notificationService: widget.notificationService,
+                ),
               ),
-            ),
-          );
-        }),
-        _categoryIcon(Icons.local_pharmacy, 'Pharmacy', primaryColor,
-            onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PharmacyScreen()),
-          );
-        }),
-        _categoryIcon(Icons.medical_services, 'Exercises', primaryColor,
-            onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ExercisesScreen()),
-          );
-        }),
-        _categoryIcon(Icons.grid_3x3, 'Games', primaryColor, onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => GamesScreen(token: widget.token)),
-          );
-        }),
-      ],
+            );
+          }),
+          const SizedBox(width: 8),
+          _categoryIcon(Icons.local_pharmacy, 'Pharmacy', primaryColor,
+              onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PharmacyScreen()),
+            );
+          }),
+          const SizedBox(width: 8),
+          _categoryIcon(Icons.medical_services, 'Exercises', primaryColor,
+              onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ExercisesScreen()),
+            );
+          }),
+          const SizedBox(width: 8),
+          _categoryIcon(Icons.grid_3x3, 'Games', primaryColor, onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => GamesScreen(token: widget.token)),
+            );
+          }),
+          const SizedBox(width: 8),
+          _categoryIcon(Icons.medication, 'Pill Reminders', primaryColor,
+              onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const PillReminderScreen()),
+            );
+          }),
+        ],
+      ),
     );
   }
 
@@ -320,7 +337,7 @@ class _HomeContentState extends State<HomeContent> {
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => Navigator.pushNamed(context, '/doctors'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: primaryColor,
@@ -331,6 +348,31 @@ class _HomeContentState extends State<HomeContent> {
                     ),
                     child: const Text('Learn More',
                         style: TextStyle(fontWeight: FontWeight.w600)),
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const PillReminderScreen()),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(LucideIcons.pill, size: 20, color: primaryColor),
+                        const SizedBox(width: 8),
+                        const Text('Pill Reminders',
+                            style: TextStyle(fontWeight: FontWeight.w600)),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -376,9 +418,10 @@ class _HomeContentState extends State<HomeContent> {
               Text(
                 title,
                 style: TextStyle(
-                    fontSize: 10,
-                    color: primaryColor,
-                    fontWeight: FontWeight.w600),
+                  fontSize: 10,
+                  color: primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
               ),

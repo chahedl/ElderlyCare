@@ -190,105 +190,197 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const primaryColor = Color(0xFF199A8E);
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF199A8E),
-        title: const Text("Chat Vocal"),
+        backgroundColor: primaryColor,
+        title: const Text(
+          'Chat with Assistant',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_add),
+            icon: const Icon(Icons.person_add, color: Colors.white),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => const UploadUserVoiceScreen()),
             ),
+            tooltip: 'Create Voice',
           ),
         ],
       ),
       body: Column(
         children: [
-          // Top options row for language and voice
+          // Language and Voice Selection
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: DropdownButton<String>(
-                    value: _selectedLanguage,
-                    items: _languages.entries
-                        .map((e) => DropdownMenuItem(
-                              value: e.value,
-                              child: Text(e.key),
-                            ))
-                        .toList(),
-                    onChanged: (v) => setState(() => _selectedLanguage = v!),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    _selectedVoice != null
-                        ? 'Voice: ${_selectedVoice!}'
-                        : 'No voice selected',
-                    style: TextStyle(
-                      color: _selectedVoice != null ? Colors.green : Colors.red,
+            padding: const EdgeInsets.all(16.0),
+            child: Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedLanguage,
+                        decoration: InputDecoration(
+                          labelText: 'Language',
+                          labelStyle: TextStyle(color: Colors.grey[600]),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: primaryColor, width: 2),
+                          ),
+                        ),
+                        items: _languages.entries
+                            .map((e) => DropdownMenuItem(
+                                  value: e.value,
+                                  child: Text(e.key),
+                                ))
+                            .toList(),
+                        onChanged: (v) =>
+                            setState(() => _selectedLanguage = v!),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        _selectedVoice != null
+                            ? 'Voice: $_selectedVoice'
+                            : 'No voice selected',
+                        style: TextStyle(
+                          color: _selectedVoice != null
+                              ? primaryColor
+                              : Colors.red[700],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-          // Chat messages list
+          // Chat Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'Conversation',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: primaryColor,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Chat Messages
           Expanded(
             child: ListView.builder(
               reverse: true,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final message = _messages[index];
                 bool isUser = message['isUser'];
-                return Align(
-                  alignment:
-                      isUser ? Alignment.centerRight : Alignment.centerLeft,
-                  child: GestureDetector(
-                    onTap: () async {
-                      if (!isUser && message['audioPath'] != null) {
-                        final file = File(message['audioPath']);
-                        if (await file.exists()) {
-                          await _audioPlayer.play(DeviceFileSource(file.path));
+                return AnimatedOpacity(
+                  opacity: 1.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Align(
+                    alignment:
+                        isUser ? Alignment.centerRight : Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: () async {
+                        if (!isUser && message['audioPath'] != null) {
+                          final file = File(message['audioPath']);
+                          if (await file.exists()) {
+                            await _audioPlayer
+                                .play(DeviceFileSource(file.path));
+                          }
                         }
-                      }
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 4, horizontal: 8),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 16),
-                      constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.75),
-                      decoration: BoxDecoration(
-                        color: isUser ? const Color(0xFF199A8E) : Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16),
-                          bottomLeft:
-                              isUser ? Radius.circular(16) : Radius.circular(0),
-                          bottomRight:
-                              isUser ? Radius.circular(0) : Radius.circular(16),
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 6.0),
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.8,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            offset: Offset(0, 2),
-                            blurRadius: 4,
+                        decoration: BoxDecoration(
+                          color: isUser ? primaryColor : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              offset: const Offset(0, 2),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12.0, horizontal: 16.0),
+                          child: Column(
+                            crossAxisAlignment: isUser
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      message['text'],
+                                      style: TextStyle(
+                                        color: isUser
+                                            ? Colors.white
+                                            : Colors.black87,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  if (!isUser &&
+                                      message['audioPath'] != null) ...[
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      Icons.play_circle_outline,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatTimestamp(message['timestamp']),
+                                style: TextStyle(
+                                  color: isUser
+                                      ? Colors.white70
+                                      : Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: Text(
-                        message['text'],
-                        style: TextStyle(
-                          color: isUser ? Colors.white : Colors.black87,
-                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -297,21 +389,42 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
-          // Microphone button
+          // Microphone Button
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: IconButton(
-              icon: Icon(
-                _speech.isListening ? Icons.mic : Icons.mic_none,
-                size: 50,
-                color:
-                    _speech.isListening ? Colors.red : const Color(0xFF199A8E),
+            child: Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: _speech.isListening ? _stopListening : _startListening,
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      _speech.isListening ? Icons.mic : Icons.mic_none,
+                      key: ValueKey(_speech.isListening),
+                      size: 40,
+                      color:
+                          _speech.isListening ? Colors.red[700] : primaryColor,
+                    ),
+                  ),
+                ),
               ),
-              onPressed: _speech.isListening ? _stopListening : _startListening,
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _formatTimestamp(DateTime timestamp) {
+    return '${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}';
   }
 }

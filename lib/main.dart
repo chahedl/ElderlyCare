@@ -1,3 +1,4 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -17,6 +18,7 @@ import 'package:pim/pages/pharmacy_screen.dart';
 import 'package:pim/viewmodels/pharmacy_viewmodel.dart';
 import 'package:pim/services/weather_service.dart';
 import 'package:pim/services/distance_service.dart';
+import 'package:pim/screens/pill_reminder_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +60,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Existing providers for your app
         Provider<NotificationService>.value(value: notificationService),
         ChangeNotifierProvider(
           create: (context) => LoginViewModel(
@@ -80,7 +81,6 @@ class MyApp extends StatelessWidget {
                 );
           },
         ),
-        // New providers for pharmacy feature
         ChangeNotifierProvider(create: (_) => PharmacyViewModel()),
         Provider(
           create: (_) => WeatherService(
@@ -98,10 +98,10 @@ class MyApp extends StatelessWidget {
         title: 'Elderly Care App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          useMaterial3: false, // Consistent with your original theme
+          useMaterial3: false,
         ),
-        darkTheme: ThemeData.dark(), // Added from friend's main.dart
-        themeMode: ThemeMode.system, // Added from friend's main.dart
+        darkTheme: ThemeData.dark(),
+        themeMode: ThemeMode.system,
         initialRoute: '/login',
         routes: {
           '/home': (context) => BottomTabBar(
@@ -114,8 +114,8 @@ class MyApp extends StatelessWidget {
           '/doctor_detail': (context) => DoctorDetailScreen(
                 doctor: ModalRoute.of(context)!.settings.arguments as Doctor,
               ),
-          '/pharmacies': (context) =>
-              const PharmacyScreen(), 
+          '/pharmacies': (context) => const PharmacyScreen(),
+          '/pill_reminders': (context) => const PillReminderScreen(),
         },
         debugShowCheckedModeBanner: false,
       ),

@@ -217,6 +217,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  chess:
+    dependency: "direct main"
+    description:
+      name: chess
+      sha256: "6e5a8222931bfb5cd14a4bb9b030c24e257e23957ec3c533fb0ff74a48984ddb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.1"
   clock:
     dependency: transitive
     description:
@@ -1048,6 +1056,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  share_plus:
+    dependency: "direct main"
+    description:
+      name: share_plus
+      sha256: b2961506569e28948d75ec346c28775bb111986bb69dc6a20754a457e3d97fa0
+      url: "https://pub.dev"
+    source: hosted
+    version: "11.0.0"
+  share_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: share_plus_platform_interface
+      sha256: "1032d392bc5d2095a77447a805aa3f804d2ae6a4d5eef5e6ebb3bd94c1bc19ef"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.0"
   shared_preferences:
     dependency: "direct dev"
     description:
@@ -1120,6 +1144,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  simple_chess_board:
+    dependency: "direct main"
+    description:
+      name: simple_chess_board
+      sha256: d24c0a14b4208c34d89ac4694b620b26895c5de0ad532d3626e59763c6a61832
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.7.0"
   sky_engine:
     dependency: transitive
     description: flutter
